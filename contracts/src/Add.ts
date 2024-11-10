@@ -1,4 +1,4 @@
-import { Field, SmartContract, state, State, method } from 'o1js';
+import { Field, SmartContract, state, State, method, UInt64, Bool, UInt32 } from 'o1js';
 
 /**
  * Basic Example
@@ -18,8 +18,15 @@ export class Add extends SmartContract {
   }
 
   @method async update() {
+    // this.account.nonce.requireBetween(new UInt32(0), UInt32.MAXINT());// check 
+    // this.network.timestamp.requireBetween(new UInt64(0), UInt64.MAXINT()); // check if timestamp meets
+
     const currentState = this.num.getAndRequireEquals();
+    currentState.assertGreaterThanOrEqual(0);// check 
+
     const newState = currentState.add(2);
     this.num.set(newState);
   }
+
+
 }

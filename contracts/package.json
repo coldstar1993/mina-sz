@@ -20,7 +20,14 @@
     "format": "prettier --write --ignore-unknown **/*",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "testw": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
-    "lint": "npx eslint src/* --fix"
+    "lint": "npx eslint src/* --fix",
+    "api-exploration": "npm run build && node --experimental-vm-modules build/src/others/api-exploration.js",
+    "program-with-input": "npm run build && node --experimental-vm-modules build/src/others/program-with-input.js",
+    "hash-preimage-prover": "npm run build && node --experimental-vm-modules build/src/others/hash-preimage-prover.js",
+    "very-simple-zkapp-local": "npm run build && node --experimental-vm-modules build/src/others/very-simple-zkapp/very-simple-zkapp-local.js",
+    "very-simple-zkapp-devnet": "npm run build && node --experimental-vm-modules build/src/others/very-simple-zkapp/very-simple-zkapp-devnet.js",
+    "simple-zkapp": "npm run build && node --experimental-vm-modules build/src/others/simple-zkapp.js",
+    "program-on-vote": "npm run build && node --experimental-vm-modules build/src/others/program-on-vote.js"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
