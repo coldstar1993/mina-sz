@@ -9,7 +9,11 @@ import {
   Int64,
   Provable,
   Struct,
+  UInt64,
 } from 'o1js';
+
+/** 除法会丢弃余数 */
+console.log('new UInt64(10).mul(2).div(3): ', new UInt64(10).mul(2).div(3).toString());
 
 /* This file demonstrates the classes and functions available in o1js */
 

@@ -11,7 +11,8 @@ import {
   Bool,
   PublicKey,
   DeployArgs,
-  Permissions
+  Permissions,
+  UInt32
 } from 'o1js';
 import { getProfiler } from './utils/profiler.js';
 
@@ -23,7 +24,6 @@ const privileged0 = Mina.TestPublicKey(
 );
 
 let initialBalance = 10_000_000_000;
-const beforeGenesis = UInt64.from(Date.now());
 
 class SimpleZkapp extends SmartContract {
   
@@ -59,7 +59,7 @@ class SimpleZkapp extends SmartContract {
     // 当前合约必须曾经被调用过：通常用于部署完毕后初始化、重置合约状态
     this.account.provedState.requireEquals(Bool(true));
     // check if timestamp meets
-    this.network.timestamp.requireBetween(beforeGenesis, UInt64.MAXINT());
+    this.network.blockchainLength.requireBetween(new UInt32(0), new UInt32(1000));
 
     // check that caller is the privileged account
     const privileged = this.privileged.getAndRequireEquals();

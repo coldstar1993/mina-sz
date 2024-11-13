@@ -3,32 +3,33 @@ import {
   state,
   State,
   method,
-  UInt64,
-  PrivateKey,
   SmartContract,
-  Mina,
-  AccountUpdate,
-  Bool,
-  PublicKey,
   DeployArgs,
-  Permissions
+  Permissions,
+  Struct
 } from 'o1js';
-import { getProfiler } from '../utils/profiler.js';
 
-
-const beforeGenesis = UInt64.from(Date.now());
+export class UpdateEvent extends Struct({
+  before: Field,
+  after: Field
+}) {}
 
 let initialState = Field(1);
 export class VerySimpleZkapp extends SmartContract {
 
   @state(Field) x = State<Field>(initialState);
 
+  events = {
+    "update": UpdateEvent,
+    "input": Field,
+  }
+
   async deploy(props?: DeployArgs) {
     await super.deploy(props)
 
     // 初始化合约状态
     this.x.set(initialState);
-    
+
     // 初始化账户权限
     this.account.permissions.set({
       ...Permissions.default(),
@@ -43,6 +44,8 @@ export class VerySimpleZkapp extends SmartContract {
     // this.account.provedState.requireEquals(Bool(true));
     // check if timestamp meets
     // this.network.timestamp.requireBetween(beforeGenesis, UInt64.MAXINT());
+    
+    this.emitEvent("input", y);
 
     // fetch onchain states
     // let x = this.x.getAndRequireEquals();
@@ -51,6 +54,8 @@ export class VerySimpleZkapp extends SmartContract {
 
     let newX = x.add(y);
     this.x.set(newX);// updates
+
+    this.emitEvent("update", new UpdateEvent({before: x, after: newX}));
 
     return newX;
   }

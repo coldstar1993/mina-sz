@@ -3,10 +3,12 @@ import {
   PrivateKey,
   Mina,
   AccountUpdate,
-  fetchAccount
+  fetchAccount,
+  fetchEvents,
+  UInt32
 } from 'o1js';
 import { getProfiler } from '../utils/profiler.js';
-import { VerySimpleZkapp } from './very-simple-zkapp.js';
+import { UpdateEvent, VerySimpleZkapp } from './very-simple-zkapp.js';
 
 const SimpleProfiler = getProfiler('Simple zkApp');
 SimpleProfiler.start('Simple zkApp test flow');
@@ -49,7 +51,7 @@ console.log('deploy...');
 let tx = await Mina.transaction({
   sender,
   fee: 0.2 * 10e9,
-  memo: '一笔交易',
+  memo: '部署合约',
   // nonce: 2
 }, async () => {
   AccountUpdate.fundNewAccount(sender);// 需要为新账户创建而花费1MINA
@@ -66,7 +68,7 @@ console.log('update x...');
 tx = await Mina.transaction({
   sender,
   fee: 0.2 * 10**9,
-  memo: '一笔交易',
+  memo: '修改状态',
   // nonce: 2
 }, async () => {
   await zkapp.update(Field(3));
@@ -76,5 +78,11 @@ await tx.sign([senderKey]).send().wait();
 
 await fetchAccount({publicKey: zkappAccount});
 console.log('current state: ' + zkapp.x.get());
+
+// const event = await fetchEvents({publicKey: zkappAccount.toBase58()});
+const startBlockHeight = new UInt32(366241);
+const event = await zkapp.fetchEvents(startBlockHeight);
+console.log('合约触发日志：');
+console.log(JSON.stringify(event));
 
 SimpleProfiler.stop().store();
