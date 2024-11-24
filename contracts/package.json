@@ -29,7 +29,8 @@
     "very-simple-zkapp-devnet-event": "npm run build && node --experimental-vm-modules build/src/others/learn-events/very-simple-zkapp-devnet-event.js",
     "simple-zkapp": "npm run build && node --experimental-vm-modules build/src/others/simple-zkapp.js",
     "program-on-vote": "npm run build && node --experimental-vm-modules build/src/others/program-on-vote.js",
-    "simple-zkapp-vesting": "npm run build && node --experimental-vm-modules build/src/others/simple-zkapp-vesting.js"
+    "simple-zkapp-vesting": "npm run build && node --experimental-vm-modules build/src/others/simple-zkapp-vesting.js",
+    "transfer-batch": "npm run build && cross-env TEST_ON_BERKELEY=true SENDER_KEY=*** node --experimental-vm-modules build/src/others/transfer-batch.js"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
@@ -42,7 +43,8 @@
     "jest": "^28.1.3",
     "prettier": "^2.3.2",
     "ts-jest": "^28.0.8",
-    "typescript": "^5.1"
+    "typescript": "^5.1",
+    "cross-env": "^7.0.3"
   },
   "peerDependencies": {
     "o1js": "^1.9.*"
