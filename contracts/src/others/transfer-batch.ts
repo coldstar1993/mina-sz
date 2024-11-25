@@ -4,8 +4,9 @@ import fs from "fs";
 let x = process.env.TEST_ON_BERKELEY === 'true';
 // Network configuration
 const network = Mina.Network({
-    mina: x?'https://api.minascan.io/node/devnet/v1/graphql/':'https://api.minascan.io/node/mainnet/v1/graphql/',
-    archive: x?'https://api.minascan.io/archive/devnet/v1/graphql/':'https://api.minascan.io/archive/mainnet/v1/graphql/'
+    networkId: "mainnet",
+    mina: x ? 'https://api.minascan.io/node/devnet/v1/graphql/' : 'https://mina-mainnet-graphql.aurowallet.com/graphql/',
+    archive: x ? 'https://api.minascan.io/archive/devnet/v1/graphql/' : 'https://api.minascan.io/archive/mainnet/v1/graphql/'
 });
 Mina.setActiveInstance(network);
 
@@ -42,7 +43,7 @@ for (let i = 0; i < recievers.length; i++) {
 
     let tx = await Mina.transaction({
         sender,
-        fee: 0.1 * 10e9,
+        fee: 0.01 * 1e9,
         memo: 'Mina Bootcamp Nov. Reward',
         nonce
     }, async () => {
@@ -53,11 +54,13 @@ for (let i = 0; i < recievers.length; i++) {
         senderAcctUpt.send({ to: r, amount: recievers[i].amount })
     });
 
-    await tx.sign([senderKey]).send().wait();
+    let tx1 = tx.sign([senderKey]);
+    await tx1.send();
 
     nonce++;
-    console.log(`${r}'s reward is sent!`);
+    console.log(`${r.toBase58()}'s reward is sent!`);
 }
 
+console.log(`all reward is sent!`);
 
 
