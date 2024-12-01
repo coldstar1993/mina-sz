@@ -30,6 +30,7 @@
     "simple-zkapp": "npm run build && node --experimental-vm-modules build/src/others/simple-zkapp.js",
     "program-on-vote": "npm run build && node --experimental-vm-modules build/src/others/program-on-vote.js",
     "simple-zkapp-vesting": "npm run build && node --experimental-vm-modules build/src/others/simple-zkapp-vesting.js",
+    "token-contract-sample":"npm run build && node --experimental-vm-modules build/src/others/token-contract-sample.js",
     "transfer-batch": "npm run build && cross-env TEST_ON_BERKELEY=true SENDER_KEY=*** node --experimental-vm-modules build/src/others/transfer-batch.js"
   },
   "devDependencies": {
