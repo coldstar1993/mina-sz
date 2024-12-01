@@ -50,7 +50,7 @@ console.log('verification key', verificationKey.data.slice(0, 10) + '..');
 console.log('proving...');
 console.time('MyProgram.provePreimage time cost ');
 const preimage0 = Field(123);// this is kept privately by prover
-let {proof} = await MyProgram.provePreimage(targetHash0, preimage0);
+let proof = await MyProgram.provePreimage(targetHash0, preimage0);
 
 console.timeEnd('MyProgram.provePreimage time cost ');
 proof = await testJsonRoundtrip(MyProof, proof);
