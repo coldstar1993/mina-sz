@@ -13,7 +13,8 @@ import {
   DeployArgs,
   Permissions,
   UInt32,
-  Provable
+  Provable,
+  Poseidon
 } from 'o1js';
 import { getProfiler } from './utils/profiler.js';
 
@@ -25,11 +26,17 @@ const privilegedAcct = Mina.TestPublicKey(
 );
 console.log(`privilegedAcct address: ${privilegedAcct.toBase58()}`);
 
+const preimage0 = Field(1234567);
+const hash0 = Poseidon.hash([preimage0]);
+
 let initialBalance = 10_000_000_000;
 
+/**
+ * 知道hashX明文的人可以将zkApp account余额的1/2转走。
+ */
 class SimpleZkapp extends SmartContract {
 
-  @state(PublicKey) privileged = State<PublicKey>(privilegedAcct);
+  @state(Field) hashX = State<Field>(hash0);
 
   events = { update: Field, payout: UInt64, payoutReceiver: PublicKey };
 
@@ -37,11 +44,12 @@ class SimpleZkapp extends SmartContract {
     await super.deploy(props)
 
     // 初始化合约状态
-    this.privileged.set(privilegedAcct);
+    this.hashX.set(hash0);
 
     // 初始化账户权限
     this.account.permissions.set({
       ...Permissions.default(),
+      send: Permissions.proof(),
       setVerificationKey: Permissions.VerificationKey.impossibleDuringCurrentVersion(),
       setPermissions: Permissions.impossible()
     })
@@ -52,25 +60,25 @@ class SimpleZkapp extends SmartContract {
    * @param caller the privileged account
    */
   @method
-  async payout(caller: PrivateKey) {
+  async payout(preimage: Field, privilegedAddr: PublicKey) {
     // check if blockchainLength meets
     this.network.blockchainLength.requireBetween(new UInt32(0), new UInt32(1000));
 
     // check that caller is the privileged account
-    const privileged = this.privileged.getAndRequireEquals();
-    let callerAddress = caller.toPublicKey();
-    callerAddress.assertEquals(privileged);
+    const hashX = this.hashX.getAndRequireEquals();
+    let hash1 = Poseidon.hash([preimage]);
+    hash1.assertEquals(hashX);
 
-    // assert that the caller account is new - this way, payout can only happen once
-    let callerAccountUpdate = AccountUpdate.createSigned(callerAddress);
-    callerAccountUpdate.account.isNew.requireEquals(Bool(true));
-    // pay out half of the zkapp balance to the caller
+    // pay out the zkapp balance to the caller
     let balance = this.account.balance.getAndRequireEquals();
     let halfBalance = balance.div(2);
-    this.send({ to: callerAccountUpdate, amount: halfBalance });
+
+    const recieverAcctUpt = AccountUpdate.createSigned(privilegedAddr);
+    recieverAcctUpt.account.isNew.requireEquals(Bool(true));
+    this.send({ to: recieverAcctUpt, amount: halfBalance });
 
     // !!!vesting schedule!!!
-    callerAccountUpdate.account.timing.set({
+    recieverAcctUpt.account.timing.set({
       initialMinimumBalance: halfBalance,
       cliffTime: new UInt32(50),
       cliffAmount: halfBalance.mul(2).div(10),// Tips: 除法会丢掉余数的
@@ -79,8 +87,8 @@ class SimpleZkapp extends SmartContract {
     });
 
     // emit some events
-    this.emitEvent('payoutReceiver', callerAddress);
-    this.emitEvent('payout', halfBalance);
+    this.emitEvent('payoutReceiver', privilegedAddr);
+    this.emitEvent('payout', balance);
   }
 }
 
@@ -111,7 +119,7 @@ let tx = await Mina.transaction(sender, async () => {
   AccountUpdate.fundNewAccount(sender);
   zkapp.deploy();// 部署
 });
-await tx.prove();
+// await tx.prove();
 await tx.sign([sender.key, zkappAccount.key]).send();
 
 console.log(`initial balance: ${zkapp.account.balance.get().div(1e9)} MINA`);
@@ -121,7 +129,7 @@ console.log(`initial balance: ${zkapp.account.balance.get().div(1e9)} MINA`);
 console.log('receive...');
 tx = await Mina.transaction(sender, async () => {
   let payerAccountUpdate = AccountUpdate.createSigned(sender);
-  payerAccountUpdate.send({ to: zkappAccount, amount: UInt64.from(200e9) });// 100MINA
+  payerAccountUpdate.send({ to: zkappAccount, amount: UInt64.from(200e9) });// 200MINA
 });
 await tx.sign([sender.key]).send();
 console.log(`current balance of zkapp: ${zkapp.account.balance.get().div(1e9)} MINA`);
@@ -130,11 +138,11 @@ console.log(`\n`);
 console.log('payout...');
 tx = await Mina.transaction(sender, async () => {
   AccountUpdate.fundNewAccount(sender);
-  await zkapp.payout(privilegedAcct.key);
+  await zkapp.payout(preimage0, privilegedAcct);
 });
 await tx.prove();
 await tx.sign([sender.key, privilegedAcct.key]).send();
-console.log(`final balance of zkapp: ${zkapp.account.balance.get().div(1e9)} MINA`);
+console.log(`final balance of zkapp: ${zkapp.account.balance.get().div(1e9)} MINA`);// 100MINA
 
 let privilegedAcctBalance = Mina.getBalance(privilegedAcct);
 console.log('\n------------------------------');
