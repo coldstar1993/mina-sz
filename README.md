@@ -5,6 +5,10 @@ This template uses TypeScript.
 ## How to build
 
 ```sh
+git clone < this repo >
+cd contracts
+npm i
+
 npm run build
 ```
 
