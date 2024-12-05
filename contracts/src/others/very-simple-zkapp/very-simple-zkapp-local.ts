@@ -35,7 +35,7 @@ let tx = await Mina.transaction({
   // nonce: 2
 }, async () => {
   AccountUpdate.fundNewAccount(sender);// 需要为新账户创建而花费1MINA
-  zkapp.deploy();// 部署前设置合约初始状态
+  await zkapp.deploy();// 部署前设置合约初始状态
 });
 await tx.prove();
 await tx.sign([sender.key, zkappAccount.key]).send();
