@@ -30,8 +30,11 @@
     "simple-zkapp": "npm run build && node --experimental-vm-modules build/src/others/simple-zkapp.js",
     "program-on-vote": "npm run build && node --experimental-vm-modules build/src/others/program-on-vote.js",
     "simple-zkapp-vesting": "npm run build && node --experimental-vm-modules build/src/others/simple-zkapp-vesting.js",
-    "token-contract-sample":"npm run build && node --experimental-vm-modules build/src/others/token-contract-sample.js",
-    "transfer-batch": "npm run build && cross-env TEST_ON_BERKELEY=true SENDER_KEY=*** node --experimental-vm-modules build/src/others/transfer-batch.js"
+    "token-contract-sample":"npm run build && node --experimental-vm-modules build/src/others/learn-custom-token/token-contract-sample.js",
+    "zkapp-as-token-holder":"npm run build && node --experimental-vm-modules build/src/others/learn-custom-token/zkapp-as-token-holder.js",
+    "transfer-batch": "npm run build && cross-env TEST_ON_BERKELEY=true SENDER_KEY=*** node --experimental-vm-modules build/src/others/transfer-batch.js",
+    "e2e.eg-local":"npm run build && node --experimental-vm-modules build/src/others/learn-fungible-token/examples/e2e.eg.js",
+    "e2e.eg-devnet":"npm run build && node --experimental-vm-modules build/src/others/learn-fungible-token/examples/e2e.eg-devnet.js"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
