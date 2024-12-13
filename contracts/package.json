@@ -27,6 +27,7 @@
     "very-simple-zkapp-local": "npm run build && node --experimental-vm-modules build/src/others/very-simple-zkapp/very-simple-zkapp-local.js",
     "very-simple-zkapp-devnet": "npm run build && node --experimental-vm-modules build/src/others/very-simple-zkapp/very-simple-zkapp-devnet.js",
     "very-simple-zkapp-devnet-event": "npm run build && node --experimental-vm-modules build/src/others/learn-events/very-simple-zkapp-devnet-event.js",
+    "reducer-composite": "npm run build && node --experimental-vm-modules build/src/others/learn-actions-reducer/reducer-composite.js",
     "simple-zkapp": "npm run build && node --experimental-vm-modules build/src/others/simple-zkapp.js",
     "program-on-vote": "npm run build && node --experimental-vm-modules build/src/others/program-on-vote.js",
     "simple-zkapp-vesting": "npm run build && node --experimental-vm-modules build/src/others/simple-zkapp-vesting.js",

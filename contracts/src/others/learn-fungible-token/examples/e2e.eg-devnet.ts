@@ -40,7 +40,7 @@ const deployTx = await Mina.transaction({
   AccountUpdate.fundNewAccount(deployer, 3)
   await adminContract.deploy({ adminPublicKey: adminContractKey.publicKey })//!! make adminContract account as the token Manager !!
   await token.deploy({
-    symbol: "Testab",
+    symbol: "BCT",
     src: "https://github.com/MinaFoundation/mina-fungible-token/blob/main/FungibleToken.ts",
   })
   await token.initialize(

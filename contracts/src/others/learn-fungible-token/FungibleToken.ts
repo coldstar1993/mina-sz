@@ -101,7 +101,6 @@ export class FungibleToken extends TokenContract {
 
     this.admin.set(admin)
     this.decimals.set(decimals)
-    this.paused.set(Bool(false))
 
     this.paused.set(startPaused)
 
